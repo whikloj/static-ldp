@@ -2,8 +2,6 @@
 
 namespace App\Model;
 
-use App\DependencyInjection\StaticLdpExtension;
-use App\TrellisConfiguration;
 use Symfony\Component\HttpFoundation\Request;
 use Twig\Environment;
 

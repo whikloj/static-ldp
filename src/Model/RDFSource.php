@@ -2,8 +2,6 @@
 
 namespace App\Model;
 
-use App\TrellisConfiguration;
-use App\Model\Resource;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -31,7 +29,6 @@ class RDFSource extends Resource
             $extParts = explode(".", $this->path);
             if (count($extParts) > 1) {
                 $ext = array_pop($extParts);
-                $described = implode(".", $extParts);
                 if (file_exists(implode(".", $extParts))) {
                     $uri = $request->getUri();
                     $link = "<" . substr($uri, 0, strlen($uri) - strlen($ext) - 1) . ">; rel=\"describes\"";
@@ -49,7 +46,7 @@ class RDFSource extends Resource
             if ($this->canStream($responseFormat)) {
                 $filename = $this->path;
                 $stream = function () use ($filename) {
-                    readfile($filename);
+                    file_get_contents($filename);
                 };
                 return new StreamedResponse($stream, 200, $res->headers->all());
             } else {
@@ -63,6 +60,7 @@ class RDFSource extends Resource
                 } else {
                     $content = $graph->serialise($responseFormat);
                 }
+                $res->headers->add(['Content-Length' => strlen($content)]);
                 $res->setContent($content);
             }
         }
